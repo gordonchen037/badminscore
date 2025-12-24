@@ -1,2 +1,2 @@
 # badminscore
-party game
+score party game

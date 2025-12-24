@@ -203,7 +203,8 @@
                                 <th>玩家</th>
                                 <th>身份</th>
                                 <th>狀態</th>
-                                <th style="width:100px;">本場得分</th>
+                                <th style="width:150px;">得分詳情 (原始+加成)</th>
+                                <th style="width:80px;">總分</th>
                             </tr>
                         </thead>
                         <tbody id="final-results-body"></tbody>
@@ -212,7 +213,7 @@
 
                 <div class="action-footer">
                     <button class="btn btn-primary" onclick="app.nextMatch()">🔄 儲存並進行下一場 (保留積分)</button>
-                    <button class="btn btn-danger" onclick="location.reload()">⚠️ 重置所有比賽</button>
+                    <button class="btn btn-danger" onclick="app.resetGame()">⚠️ 重置所有比賽</button>
                 </div>
             </div>
         </section>
@@ -225,7 +226,7 @@
             <h3>🛑 休息與檢討 (觸發分: <span id="cp-score">7</span>)</h3>
             <p>雙方各自分開投票！討論時間 1 分鐘。</p>
             <div class="timer-display" id="vote-timer">60</div>
-            <div class="split-voting">
+            <div class="split-voting" id="voting-section">
                 <div class="vote-col">
                     <h4>🔴 A 組投票 (需 <span id="thresh-a">0</span> 票)</h4>
                     <div id="vote-list-a" class="vote-list"></div>
@@ -235,7 +236,15 @@
                     <div id="vote-list-b" class="vote-list"></div>
                 </div>
             </div>
-            <button class="btn btn-primary full-width" onclick="app.confirmVotes()">✅ 確認淘汰結果</button>
+
+            <!-- Result Section (For Veteran Actions) -->
+            <div id="elimination-resolution" style="display:none;">
+                <h4>⚠️ 淘汰名單確認</h4>
+                <p>若為「老手」可發動能力：</p>
+                <div id="eliminated-list"></div>
+            </div>
+            <button id="btn-confirm-vote" class="btn btn-primary full-width" onclick="app.confirmVotes()">✅
+                確認淘汰結果</button>
         </div>
     </div>
 
