@@ -60,9 +60,9 @@ class UIManager {
         if (tabs[stageId - 1]) tabs[stageId - 1].classList.add('active');
 
         const texts = [
-            "1. 發球得分: 發球至指定區域得分。",
-            "2. 打倒球筒: 用球打倒對方場地內的球筒。",
-            "3. 兩人一拍: 兩人合持一支球拍接球。"
+            "1. 發球得分: 發球擊落羽球得分。",
+            "2. 打倒球筒: 用球打倒場地內的球筒。",
+            "3. 兩人一拍: 兩人合持一支球拍發球至指定位置得分。"
         ];
         document.getElementById('stage-desc').innerText = texts[stageId - 1] || "";
         this.updateStage1Display();
