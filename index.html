@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>羽球趣味競賽計分</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </div>
+
+    <!-- Persistent Scoreboard Button -->
+    <button class="floating-score-btn" onclick="ui.toggleGlobalScoreboard()">📊 個人總積分</button>
+
+    <main class="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <h1 class="bounce-text">🏸 羽球趣味競賽 🏸</h1>
+        </header>
+
+        <!-- View: Setup -->
+        <section id="view-setup" class="view active">
+            <div class="card glass-panel pop-in">
+                <h2>🏆 隊伍報名</h2>
+                <div class="teams-container">
+                    <div class="team-input-group team-a">
+                        <h3 class="team-label">A 組</h3>
+                        <div class="members-list" id="team-a-members"></div>
+                        <button class="btn btn-sm btn-add" onclick="ui.addMemberInput('A')">➕ 新增隊員</button>
+                    </div>
+                    <div class="vs-divider">VS</div>
+                    <div class="team-input-group team-b">
+                        <h3 class="team-label">B 組</h3>
+                        <div class="members-list" id="team-b-members"></div>
+                        <button class="btn btn-sm btn-add" onclick="ui.addMemberInput('B')">➕ 新增隊員</button>
+                    </div>
+                </div>
+                <div class="action-footer center">
+                    <button class="btn btn-primary btn-lg pulse" onclick="app.startStage1()">🚀 開始比賽</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Stages 1-3 -->
+        <section id="view-stage1" class="view">
+            <div class="card glass-panel slide-in">
+                <div class="nav-header">
+                    <button class="btn btn-sm btn-secondary" onclick="ui.switchView('setup')">⬅ 返回設定</button>
+                    <h2>第 1-3 關：團體賽</h2>
+                </div>
+
+                <div class="stage-selector">
+                    <div class="tabs">
+                        <button class="tab active" onclick="ui.setSubStage(1)">1. 發球得分</button>
+                        <button class="tab" onclick="ui.setSubStage(2)">2. 打倒球筒</button>
+                        <button class="tab" onclick="ui.setSubStage(3)">3. 兩人一拍</button>
+                    </div>
+                    <p class="tab-description" id="stage-desc">發球至指定區域得分。</p>
+                </div>
+
+                <div class="scoreboard-mini">
+                    <div class="score-box team-a">
+                        <span id="s1-name-a">A 組</span>
+                        <div class="score-display">
+                            <button class="btn-icon" onclick="app.updateStage1Score('A', -1)">-</button>
+                            <span id="s1-score-a" class="big-number">0</span>
+                            <button class="btn-icon" onclick="app.updateStage1Score('A', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="score-box team-b">
+                        <span id="s1-name-b">B 組</span>
+                        <div class="score-display">
+                            <button class="btn-icon" onclick="app.updateStage1Score('B', -1)">-</button>
+                            <span id="s1-score-b" class="big-number">0</span>
+                            <button class="btn-icon" onclick="app.updateStage1Score('B', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-footer">
+                    <button class="btn btn-primary full-width" onclick="app.startStage4Setup()">下一關：羽球殺 ➡️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Stage 4 Setup (Team Scramble) -->
+        <section id="view-stage4-setup" class="view">
+            <div class="card glass-panel fade-in">
+                <div class="nav-header">
+                    <button class="btn btn-sm btn-secondary" onclick="ui.switchView('stage1')">⬅ 返回</button>
+                    <h2>第 4 關：羽球殺 - 隊伍確認</h2>
+                </div>
+
+                <p class="instruction">請確認目前場上隊伍分配 (可直接修改)</p>
+                <div class="scramble-container">
+                    <div class="team-col">
+                        <h3>🔴 A 組</h3>
+                        <div id="scramble-a" class="scramble-list"></div>
+                    </div>
+                    <div class="team-col">
+                        <h3>🔵 B 組</h3>
+                        <div id="scramble-b" class="scramble-list"></div>
+                    </div>
+                </div>
+                <div class="action-footer center">
+                    <button class="btn btn-primary btn-lg" onclick="app.startStage4Game()">🔥 開始對戰 🔥</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Stage 4 Game -->
+        <section id="view-stage4-game" class="view">
+            <div class="game-dashboard">
+                <div class="nav-header">
+                    <button class="btn btn-sm btn-secondary" onclick="ui.switchView('stage4setup')">⬅ 返回調整</button>
+                    <span class="badminton-title">🏸 羽球殺 - 第 <span id="match-count">1</span> 場</span>
+                </div>
+
+                <div class="main-scoreboard">
+                    <div class="team-panel team-a">
+                        <h3>A 組</h3>
+                        <div class="score-control">
+                            <span id="s4-score-a" class="mega-score">0</span>
+                            <div class="btns">
+                                <button class="btn-score up" onclick="app.scoreStage4('A', 1)">▲</button>
+                                <button class="btn-score down" onclick="app.scoreStage4('A', -1)">▼</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="center-info">
+                        <div class="timer" id="game-timer">--:--</div>
+                        <div class="phase-badge">進行中</div>
+                    </div>
+                    <div class="team-panel team-b">
+                        <h3>B 組</h3>
+                        <div class="score-control">
+                            <span id="s4-score-b" class="mega-score">0</span>
+                            <div class="btns">
+                                <button class="btn-score up" onclick="app.scoreStage4('B', 1)">▲</button>
+                                <button class="btn-score down" onclick="app.scoreStage4('B', -1)">▼</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="players-live-status">
+                    <div class="team-col" id="s4-live-a"></div>
+                    <div class="team-col" id="s4-live-b"></div>
+                </div>
+
+                <div class="action-footer">
+                    <button class="btn btn-danger full-width" onclick="app.finishStage4Match()">🏁 本場結束 (結算)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Stage 4 Role Assignment -->
+        <section id="view-stage4-results" class="view">
+            <div class="card glass-panel full-width">
+                <h2>🕵️‍♀️ 本場角色揭曉與結算</h2>
+                <div id="role-assign-container"></div>
+                <div class="action-footer">
+                    <button class="btn btn-success full-width" onclick="app.calculateAndShowFinal()">📊 計算本場分數</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Summary -->
+        <section id="view-summary" class="view">
+            <div class="card glass-panel full-width">
+                <h2>🎉 比賽成績單 (可修改分數)</h2>
+
+                <div class="summary-grid">
+                    <!-- Stage 1-3 Summary -->
+                    <div class="summary-box">
+                        <h3>第 1-3 關 (團體總分)</h3>
+                        <div class="mini-row"><span>A 組:</span> <strong id="sum-s1-a">0</strong></div>
+                        <div class="mini-row"><span>B 組:</span> <strong id="sum-s1-b">0</strong></div>
+                    </div>
+                </div>
+
+                <h3>本場詳細得分 (請確認)</h3>
+                <div class="results-table-wrapper">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>玩家</th>
+                                <th>身份</th>
+                                <th>狀態</th>
+                                <th style="width:100px;">本場得分</th>
+                            </tr>
+                        </thead>
+                        <tbody id="final-results-body"></tbody>
+                    </table>
+                </div>
+
+                <div class="action-footer">
+                    <button class="btn btn-primary" onclick="app.nextMatch()">🔄 儲存並進行下一場 (保留積分)</button>
+                    <button class="btn btn-danger" onclick="location.reload()">⚠️ 重置所有比賽</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: Vote -->
+    <div id="modal-vote" class="modal">
+        <div class="modal-content glass-panel pop-in">
+            <h3>🛑 休息與檢討 (觸發分: <span id="cp-score">7</span>)</h3>
+            <p>雙方各自分開投票！討論時間 1 分鐘。</p>
+            <div class="timer-display" id="vote-timer">60</div>
+            <div class="split-voting">
+                <div class="vote-col">
+                    <h4>🔴 A 組投票 (需 <span id="thresh-a">0</span> 票)</h4>
+                    <div id="vote-list-a" class="vote-list"></div>
+                </div>
+                <div class="vote-col">
+                    <h4>🔵 B 組投票 (需 <span id="thresh-b">0</span> 票)</h4>
+                    <div id="vote-list-b" class="vote-list"></div>
+                </div>
+            </div>
+            <button class="btn btn-primary full-width" onclick="app.confirmVotes()">✅ 確認淘汰結果</button>
+        </div>
+    </div>
+
+    <!-- Modal: Global Individual Scoreboard -->
+    <div id="modal-global-score" class="modal">
+        <div class="modal-content glass-panel">
+            <h3>📊 羽球殺個人排行榜</h3>
+            <div class="ranking-header">
+                <span>名次</span>
+                <span>玩家</span>
+                <span>累積積分</span>
+            </div>
+            <div id="global-ranking-list" class="ranking-list">
+                <!-- JS populated -->
+            </div>
+            <button class="btn btn-secondary full-width" onclick="ui.toggleGlobalScoreboard()">關閉</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
